@@ -15,19 +15,20 @@ object Runner {
     //val reg = Union(Symbol('a'), Symbol('b'))
 
     
-    val aToZ = Regex.merge_ulists(Regex.range('a', 'z'),
+    val aToZ = Regex.mergeUlists(Regex.range('a', 'z'),
       Regex.range('A', 'Z'))
-    val aToZNum = Regex.merge_ulists(Regex.range('0', '9'), aToZ)
-    val part1 = Regex.one_or_more(Regex.add_to_ulist(aToZNum, List('_', '.', '+', '-')))
-    val part2 = Concat(Symbol('@'), Regex.one_or_more(Regex.add_to_ulist(aToZNum, List('-'))))
-    val part3 = Concat(Symbol('.'), Regex.one_or_more(Regex.add_to_ulist(aToZNum, List('-', '.'))))
+    val aToZNum = Regex.mergeUlists(Regex.range('0', '9'), aToZ)
+    val part1 = Regex.oneOrMore(Regex.addToUlist(aToZNum, List('_', '.', '+', '-')))
+    val part2 = Concat(Symbol('@'), Regex.oneOrMore(Regex.addToUlist(aToZNum, List('-'))))
+    val part3 = Concat(Symbol('.'), Regex.oneOrMore(Regex.addToUlist(aToZNum, List('-', '.'))))
     val reg = Concat(part1, Concat(part2, part3))
 
 
     val alpha = reg.alphabet
 
     val (states, trans, accept, start) = reg.dfa(alpha)
-    val cCode = DFA.toC(states, trans, accept, start)
+    //val cCode = DFA.toC(states, trans, accept, start)
+    val cCode = new DFA(states, trans, accept, start).toC
     println(cCode)
 
    /*

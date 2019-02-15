@@ -151,13 +151,13 @@ sealed trait Regex {
   }
 
   def dfa(alpha: Array[Boolean]): Tuple4[MutHashSet[Regex], MutHashSet[Tuple3[Regex, Byte, Regex]], MutHashSet[Regex], Regex] = {
-    val simp_expr = this.simplify
+    val simpExpr = this.simplify
     var states: MutHashSet[Regex] = MutHashSet()
     var trans: MutHashSet[Tuple3[Regex, Byte, Regex]] = MutHashSet()
-    states.add(simp_expr)
-    explore(alpha, states, trans, simp_expr)
+    states.add(simpExpr)
+    explore(alpha, states, trans, simpExpr)
     var accepts = acceptStates(states)
-    (states, trans, accepts, simp_expr)
+    (states, trans, accepts, simpExpr)
   }
 }
 case object Empty extends Regex
@@ -177,13 +177,13 @@ object Regex {
     val set: HashSet[Byte] = HashSet(lst:_*)
     UnionList(set)
   }
-  def merge_ulists(x: UnionList, y: UnionList): UnionList = {
+  def mergeUlists(x: UnionList, y: UnionList): UnionList = {
     return UnionList(x.lst.union(y.lst))
   }
-  def add_to_ulist(reg: UnionList, to_add: List[Byte]): UnionList = {
+  def addToUlist(reg: UnionList, to_add: List[Byte]): UnionList = {
     UnionList(reg.lst ++ to_add)
   }
-  def one_or_more(r: Regex): Regex = {
+  def oneOrMore(r: Regex): Regex = {
     Concat(r, Iterate(r))
   }
 }
