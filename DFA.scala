@@ -1,12 +1,12 @@
 import scala.collection.mutable.{HashSet => MutHashSet, HashMap => MutHashMap}
 
 class DFA(states: MutHashSet[Regex], trans: MutHashSet[Tuple3[Regex, Byte, Regex]], accepts: MutHashSet[Regex], start: Regex) {
-  def toC: String = {
+  def toC(meth_name: String = "matches"): String = {
     //val (states, trans, accepts, start) = dfa
     val ids = stateIds
     val q0Id: Int = ids.get(start).get
     val acceptReturn = acceptSwitch(ids)
-    val header = s"int matches(char* str) {\nint state = $q0Id;\nwhile(*str){\n"
+    val header = s"int $meth_name(char* str) {\nint state = $q0Id;\nwhile(*str){\n"
     val switch = outterSwitch(ids)
     val footer = s"\nstr++;\n}\n$acceptReturn}"
     header + switch + footer

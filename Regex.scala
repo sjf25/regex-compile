@@ -186,6 +186,13 @@ object Regex {
   def oneOrMore(r: Regex): Regex = {
     Concat(r, Iterate(r))
   }
+  def repeatNTimes(r: Regex, n: Int): Regex = {
+    var result: Regex = Epsilon
+    for(i <- 1 to n) {
+      result = Concat(r, result)
+    }
+    result
+  }
 }
 
 /*
