@@ -43,4 +43,31 @@ class DFA(states: MutHashSet[Regex], trans: MutHashSet[Tuple3[Regex, Byte, Regex
     })
     ids
   }
+  // TODO: use and test
+  // uses modified version of floyd-warshall to check if path exists to accepts
+  def earlyExitStates(ids: MutHashMap[Regex, Int]): MutHashSet[Regex] = {
+    val edges: MutHashMap[Regex, Regex] = MutHashMap()
+    val dist = Array.ofDim[Boolean](states.size, states.size)
+    trans.foreach((t) => edges.put(t._1, t._3))
+    edges.foreach((e) => {
+      val fromId = ids.get(e._1).get
+      val toId = ids.get(e._2).get
+      dist(fromId)(toId) = true
+    })
+    states.foreach((s) => dist(ids.get(s).get)(ids.get(s).get) = true)
+    for(k <- 0 to ids.size - 1) {
+      for(i <- 0 to ids.size - 1) {
+        for(j <- 0 to ids.size - 1) {
+          if(!dist(i)(j) && dist(i)(k) && dist(k)(j)) {
+            dist(i)(j) = true
+          }
+        }
+      }
+    }
+
+    val earlyExits = states.filterNot((s) => {
+      accepts.exists((acc) => dist(ids.get(s).get)(ids.get(acc).get))
+    })
+    earlyExits
+  }
 }

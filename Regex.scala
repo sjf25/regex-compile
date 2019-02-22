@@ -1,5 +1,4 @@
 import scala.collection.immutable.NumericRange
-//import scala.collection.mutable.HashSet
 import scala.collection.immutable.HashSet
 import scala.collection.mutable.{HashSet => MutHashSet}
 
@@ -15,7 +14,6 @@ sealed trait Regex {
       case Union(a, b) => if (a.delta == Epsilon || b.delta == Epsilon) Epsilon else Empty
       case Intersection(a, b) => if (a.delta == Epsilon && b.delta == Epsilon) Epsilon else Empty
       case UnionList(_) => Empty
-      //case UnionListWithEps(_) => Epsilon
     }
   }
 
@@ -37,16 +35,8 @@ sealed trait Regex {
         //Union(Epsilon, UnionList(xs - sym))
         //UnionListWithEps(xs - sym)
       } else {
-        //this
         Empty
       }
-      /*
-      case UnionListWithEps(xs) => if (xs.contains(sym)) {
-        UnionListWithEps(xs - sym)
-      } else {
-        this
-      }
-      */
     }
   }
 
@@ -75,7 +65,6 @@ sealed trait Regex {
       case Union(a, b) => Union(a.simplifyPass, b.simplifyPass)
       case Intersection(a, b) => Intersection(a.simplifyPass, b.simplifyPass)
       case UnionList(_) => this
-      //case UnionListWithEps(_) => this
     }
   }
 
@@ -107,7 +96,6 @@ sealed trait Regex {
         a.alphabetHelper(set)
         b.alphabetHelper(set)
       case UnionList(xs) => xs.map(x => set(x) = true)
-      //case UnionListWithEps(xs) => xs.map(x => set(x) = true)
     }
   }
   def goto(alpha: Array[Boolean], q: Regex, c: Byte, states: MutHashSet[Regex],
@@ -123,25 +111,7 @@ sealed trait Regex {
     }
   }
   def explore(alpha: Array[Boolean], states: MutHashSet[Regex], trans: MutHashSet[Tuple3[Regex, Byte, Regex]], q: Regex) {
-    q match  {
-      /*
-      case UnionList(xs) => 
-        alpha.indices.foreach(i =>
-            if(alpha(i)) {
-              if(!alpha.contains(i))
-                goto(alpha, q, i.toByte, states, trans)
-              else
-                trans.add((q, i.toByte, q))
-            }
-        )
-        */
-        /*
-        xs.foreach(i => if(alpha(i)) goto(alpha, q, i.toByte, states, trans))
-        if(xs.size != 256)
-          trans.add((q, 
-        */
-      case _ => alpha.indices.foreach(i => if(alpha(i)) goto(alpha, q, i.toByte, states, trans))
-    }
+      alpha.indices.foreach(i => if(alpha(i)) goto(alpha, q, i.toByte, states, trans))
   }
 
   def acceptStates(states: MutHashSet[Regex]) : MutHashSet[Regex] = {
@@ -169,7 +139,6 @@ case class Concat(fst: Regex, snd: Regex) extends Regex
 case class Union(fst: Regex, snd: Regex) extends Regex
 case class Intersection(fst: Regex, snd: Regex) extends Regex
 case class UnionList(lst: HashSet[Byte]) extends Regex
-//case class UnionListWithEps(lst: HashSet[Byte]) extends Regex
 
 object Regex {
   def range(start: Byte, end: Byte): UnionList = {
@@ -193,13 +162,7 @@ object Regex {
     }
     result
   }
-}
-
-/*
-object Regex {
-  def range(start: Byte, end: Byte): UnionList = {
-    //UnionList(NumericRange(start, end, 1: Byte).toList)
-    UnionList(NumericRange.inclusive(start, end, 1: Byte).toList)
+  def ulistSingle(sym: Byte): UnionList = {
+    UnionList(HashSet() + sym)
   }
 }
-*/
